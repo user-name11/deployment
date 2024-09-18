@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
-import leafmap.foliumap as leafmap
-from streamlit_folium import st_folium
-from shapely import wkt
+from keplergl import KeplerGl
 import h3
+import json
+from shapely import wkt
 
 # Function to convert CSV with WKT geometry back to GeoDataFrame
 def csv_to_geojson(csv_file):
@@ -23,66 +23,76 @@ def rides_h3():
     st.set_page_config(layout="wide")
 
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choose a page", ["Hexagon Visualization", "CSV to GeoJSON Conversion"])
+    page = st.sidebar.selectbox("Choose a page", ["Hexagon and Searches Visualization", "CSV to GeoJSON Conversion"])
 
-    if page == "Hexagon Visualization":
-        st.title('Rides Hexagon Visualization')
+    if page == "Hexagon and Searches Visualization":
+        st.title('Hexagon and Searches Visualization')
 
         # Upload necessary files for analysis
         st.sidebar.title("Upload Files")
-        rides = st.sidebar.file_uploader("Upload the Rides CSV file:", type="csv")
-        searches = st.sidebar.file_uploader("Upload the Searches CSV file:", type="csv")
-        deployment_spots = st.sidebar.file_uploader("Upload the deployment spots downloaded from Admin", type="geojson")
-        boundary_file = st.sidebar.file_uploader("Upload Boundary GeoJSON (Optional):", type="geojson")
+        rides_file = st.sidebar.file_uploader("Upload the Rides CSV file:", type="csv")
+        searches_file = st.sidebar.file_uploader("Upload the Searches CSV file:", type="csv")
+        deployment_spots_file = st.sidebar.file_uploader("Upload the deployment spots downloaded from Admin", type="geojson")
 
         # Add a resolution selector for H3 hexagons
-        resolution = st.sidebar.slider("Select H3 Resolution", min_value=5, max_value=10, value=8)
+        resolution = st.sidebar.slider("Select H3 Resolution", min_value=5, max_value=10, value=9)
 
-        if rides and searches and deployment_spots:
-            rides_df = pd.read_csv(rides)
-            searches_df = pd.read_csv(searches)
-            dpzs = gpd.read_file(deployment_spots)
+        if rides_file and searches_file and deployment_spots_file:
+            # Read the uploaded rides CSV file
+            rides_df = pd.read_csv(rides_file)
 
-            # Rename coordinate columns for consistency
+            # Read the uploaded searches CSV file
+            searches_df = pd.read_csv(searches_file)
+
+            # Split 'Location' column into separate latitude and longitude columns
+            searches_df[['latitude', 'longitude']] = searches_df['Location'].str.split(',', expand=True)
+            
+            # Convert latitude and longitude columns to numeric
+            searches_df['latitude'] = pd.to_numeric(searches_df['latitude'])
+            searches_df['longitude'] = pd.to_numeric(searches_df['longitude'])
+
+            # Read the uploaded deployment spots GeoJSON file
+            dpzs = gpd.read_file(deployment_spots_file)
+
+            # Rename columns for consistency
             rides_df.rename(columns={'Pickup Lat': 'Pickup_Lat', 'Pickup Lng': 'Pickup_Lng'}, inplace=True)
-            rides_df.rename(columns={'Dropoff Lat': 'Dropoff_Lat', 'Dropoff Lng': 'Dropoff_Lng'}, inplace=True)
 
             # Create rides GeoDataFrame
             rides_gdf = gpd.GeoDataFrame(
                 rides_df, geometry=gpd.points_from_xy(rides_df.Pickup_Lng, rides_df.Pickup_Lat), crs="EPSG:4326"
             )
 
-            # Filter for finished rides only
-            pickup_gdf = rides_gdf[rides_gdf['State'] == 'finished']
+            # Create searches GeoDataFrame (no H3 hex conversion, just points)
+            searches_gdf = gpd.GeoDataFrame(
+                searches_df, geometry=gpd.points_from_xy(searches_df.longitude, searches_df.latitude), crs="EPSG:4326"
+            )
 
-            # Hexagonal binning using H3 with user-selected resolution
+            # Hexagonal binning for rides data using H3
             rides_gdf['h3'] = rides_gdf.apply(lambda row: h3.geo_to_h3(row.geometry.y, row.geometry.x, resolution=resolution), axis=1)
 
-            # Group by hexagon and count rides per hexagon
+            # Group rides by hexagon and count rides per hexagon
             rides_per_hex = rides_gdf.groupby('h3').size().reset_index(name='ride_count')
 
-            # Create the map using Leafmap
-            berlin_coordinates = [52.51, 13.39]
-            m = leafmap.Map(center=berlin_coordinates, zoom=12)
+            # Convert H3 hexagons to GeoDataFrame for visualization
+            rides_per_hex_gdf = gpd.GeoDataFrame(rides_per_hex, geometry=gpd.points_from_xy(
+                rides_per_hex.h3.apply(lambda h: h3.h3_to_geo(h)[1]), 
+                rides_per_hex.h3.apply(lambda h: h3.h3_to_geo(h)[0])), crs="EPSG:4326")
 
-            # Add deployment spots GeoJSON to the map
-            m.add_gdf(dpzs, layer_name="Deployment Spots", style={'fillColor': '#ff7800', 'color': '#ff7800'})
+            # Initialize Kepler.gl map
+            kepler_map = KeplerGl(height=600)
 
-            # Visualize hexagons using Leafmap H3 support
-            hex_ids = rides_per_hex['h3'].tolist()
-            m.add_h3_data(hex_ids, resolution=resolution, value=rides_per_hex['ride_count'].tolist(), layer_name="H3 Hexagons")
+            # Add the hexagon data (rides) to Kepler.gl
+            kepler_map.add_data(rides_per_hex_gdf, "Hexagon Data (Rides)")
 
-            # Display the map in Streamlit
-            st_folium(m, width=700, height=500)
+            # Add the searches data as points to Kepler.gl
+            kepler_map.add_data(searches_gdf, "Searches Data")
 
-            # Download deployment zones as CSV
-            dpzs_csv = dpzs.to_csv(index=False)
-            st.download_button(
-                label="Download Deployment Zones as CSV",
-                data=dpzs_csv,
-                file_name="deployment_zones.csv",
-                mime="text/csv"
-            )
+            # Add the deployment polygons (dpzs) to Kepler.gl
+            kepler_map.add_data(dpzs, "Deployment Zones")
+
+            # Render the Kepler.gl map in Streamlit
+            kepler_map_html = kepler_map._repr_html_()
+            st.components.v1.html(kepler_map_html, height=600)
 
     elif page == "CSV to GeoJSON Conversion":
         st.title("CSV to GeoJSON Conversion")
@@ -103,6 +113,18 @@ def rides_h3():
                 mime="application/json"
             )
 
-# Run the Streamlit app
-rides_h3()        
+        # Provide download button for original DPZ GeoJSON file
+        deployment_spots_file = st.file_uploader("Upload Original Deployment Spots GeoJSON", type="geojson")
+        if deployment_spots_file:
+            dpzs = gpd.read_file(deployment_spots_file)
+            dpzs_geojson = dpzs.to_json()
 
+            st.download_button(
+                label="Download Original Deployment Zones as GeoJSON",
+                data=dpzs_geojson,
+                file_name="deployment_zones_original.geojson",
+                mime="application/json"
+            )
+
+# Run the Streamlit app
+rides_h3()
