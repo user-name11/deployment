@@ -79,7 +79,7 @@ def rides_h3():
                 rides_per_hex.h3.apply(lambda h: h3.h3_to_geo(h)[0])), crs="EPSG:4326")
 
             # Initialize Kepler.gl map
-            kepler_map = KeplerGl(height=600)
+            kepler_map = KeplerGl(height=800)
 
             # Add the hexagon data (rides) to Kepler.gl
             kepler_map.add_data(rides_per_hex_gdf, "Hexagon Data (Rides)")
