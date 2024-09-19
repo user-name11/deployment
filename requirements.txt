@@ -1,0 +1,6 @@
+streamlit
+pandas
+geopandas
+keplergl
+h3
+shapely
