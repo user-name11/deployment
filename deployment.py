@@ -100,7 +100,7 @@ def rides_h3():
                 center_lat, center_lon = calculate_center(rides_per_hex_gdf, searches_gdf, dpzs)
 
             # Initialize Kepler.gl map with a larger height and centered on the data
-            kepler_map = KeplerGl(height=800)  # Adjusted height for a larger map
+            kepler_map = KeplerGl(height=1000)  # Adjusted height for a larger map
 
             # Add the hexagon data (rides) to Kepler.gl
             kepler_map.add_data(rides_per_hex_gdf, "Hexagon Data (Rides)")
