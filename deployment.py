@@ -6,6 +6,56 @@ import h3
 import json
 from shapely import wkt
 
+polygon_cluster_h3_config = {
+  "version": "v1",
+  "config": {
+    "visState": {
+      "layers": [
+        {
+          "id": "polygon-layer-id",
+          "type": "geojson",
+          "config": {
+            "dataId": "Deployment Zones",
+            "label": "Polygons",
+            "isVisible": True,
+            "visConfig": {
+              "opacity": 0.5,
+              "strokeOpacity": 1,
+              "thickness": 0.5
+            }
+          }
+        },
+        {
+          "id": "cluster-layer-id",
+          "type": "point",
+          "config": {
+            "dataId": "Lost Rides Data",
+            "label": "Clusters",
+            "isVisible": True,
+            "visConfig": {
+              "radius": 30,
+              "opacity": 0.8
+            }
+          }
+        },
+        {
+          "id": "h3-layer-id",
+          "type": "hexagonId",
+          "config": {
+            "dataId": "Rides hex bin",
+            "label": "H3 Hexagons",
+            "isVisible": True,
+            "visConfig": {
+              "opacity": 0.7
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
 # Function to convert CSV with WKT geometry back to GeoDataFrame
 def csv_to_geojson(csv_file):
     dpz_csv = pd.read_csv(csv_file)
@@ -107,10 +157,10 @@ def rides_h3():
             kepler_map = KeplerGl(height=1000)  # Adjusted height for a larger map
 
             # Add the hexagon data (rides) to Kepler.gl
-            kepler_map.add_data(rides_per_hex_gdf, "Hexagon Data (Rides)")
+            kepler_map.add_data(rides_per_hex_gdf, "Rides hex bin")
 
             # Add the searches data as points to Kepler.gl
-            kepler_map.add_data(lost_rides_gdf, "Lost rides Data")
+            kepler_map.add_data(lost_rides_gdf, "Lost Rides Data")
 
             # Add the deployment polygons (dpzs) to Kepler.gl
             kepler_map.add_data(dpzs, "Deployment Zones")
