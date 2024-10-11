@@ -5,61 +5,111 @@ from keplergl import KeplerGl
 import h3
 import json
 from shapely import wkt
+from shapely import Polygon
 
 polygon_cluster_h3_config = {
-  "version": "v1",
-  "config": {
-    "visState": {
-      "layers": [
-        {
-          "id": "polygon-layer-id",
-          "type": "geojson",
-          "config": {
-            "dataId": "Deployment Zones",
-            "label": "Polygons",
-            "isVisible": True,
-            "visConfig": {
-              "opacity": 0.5,
-              "strokeOpacity": 1,
-              "thickness": 1
-            }
-          }
+    "version": "v1",
+    "config": {
+        "visState": {
+            "datasets": [
+                {
+                    "id": "Deployment Zones",
+                    "label": "Deployment Zones",
+                    "color": [255, 153, 31],
+                    "allData": [],
+                    "fields": []
+                },
+                {
+                    "id": "Lost Rides Data",
+                    "label": "Lost Rides Data",
+                    "color": [0, 0, 255],
+                    "allData": [],
+                    "fields": []
+                },
+                {
+                    "id": "Rides hex bin",
+                    "label": "Rides hex bin",
+                    "color": [0, 255, 0],
+                    "allData": [],
+                    "fields": []
+                }
+            ],
+            "layers": [
+                {
+                    "id": "polygon-layer-id",
+                    "type": "geojson",
+                    "config": {
+                        "dataId": "Deployment Zones",
+                        "label": "Polygons",
+                        "isVisible": True,
+                        "visConfig": {
+                            "opacity": 0.5,
+                            "strokeOpacity": 1,
+                            "thickness": 1
+                        }
+                    }
+                },
+                {
+                    "id": "cluster-layer-id",
+                    "type": "point",
+                    "config": {
+                        "dataId": "Lost Rides Data",
+                        "label": "Clusters",
+                        "isVisible": True,
+                        "visConfig": {
+                            "radius": 30,
+                            "opacity": 0.8,
+                            "fixedRadius": False,        # Enable dynamic radius
+                            "cluster": True,             # Enable clustering
+                            "clusterRadius": 50,         # Radius of clustering in pixels
+                            "colorRange": {
+                                "colors": ["#E1F5FE", "#039BE5", "#0277BD"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "h3-layer-id",
+                    "type": "hexagonId",
+                    "config": {
+                        "dataId": "Rides hex bin",
+                        "label": "H3 Hexagons",
+                        "isVisible": True,
+                        "columns": {
+                            "hex_id": "hex_id"},
+                        "visConfig": {
+                            "opacity": 0.7
+                        }
+                    }
+                }
+            ]
         },
-        {
-          "id": "cluster-layer-id",
-          "type": "point",
-          "config": {
-            "dataId": "Lost Rides Data",
-            "label": "Clusters",
-            "isVisible": True,
-            "visConfig": {
-              "radius": 30,
-              "opacity": 0.8,
-              "fixedRadius": False,        # Enable dynamic radius
-              "cluster": True,             # Enable clustering
-              "clusterRadius": 50,         # Radius of clustering in pixels
-              "colorRange": {
-                "colors": ["#E1F5FE", "#039BE5", "#0277BD"]
-              }
-            }
-          }
+        "mapState": {
+            "bearing": 0,
+            "dragRotate": True,
+            "latitude": 0,  # Placeholder, will be updated later
+            "longitude": 0,  # Placeholder, will be updated later
+            "pitch": 0,
+            "zoom": 11,
+            "isSplit": False
         },
-        {
-          "id": "h3-layer-id",
-          "type": "hexagonId",
-          "config": {
-            "dataId": "Rides hex bin",
-            "label": "H3 Hexagons",
-            "isVisible": True,
-            "visConfig": {
-              "opacity": 0.7
-            }
-          }
+        "mapStyle": {
+            "styleType": "dark",
+            "topLayerGroups": {},
+            "visibleLayerGroups": {
+                "label": True,
+                "road": True,
+                "border": False,
+                "building": True,
+                "water": True,
+                "land": True,
+                "3d building": False
+            },
+            "mapStyles": {}
         }
-      ]
     }
-  }
 }
+
 
 
 # Function to convert CSV with WKT geometry back to GeoDataFrame
@@ -148,10 +198,22 @@ def rides_h3():
             # Group rides by hexagon and count rides per hexagon
             rides_per_hex = rides_gdf.groupby('h3').size().reset_index(name='ride_count')
 
+            # Prepare DataFrame with H3 indices for 'hexagonId' layer
+            rides_per_hex_gdf = rides_per_hex.rename(columns={'h3': 'hex_id'})
+
+            # Ensure 'hex_id' is a string
+            rides_per_hex_gdf['hex_id'] = rides_per_hex_gdf['hex_id'].astype(str)
+
+            # Remove geometry column if it exists
+            if 'geometry' in rides_per_hex_gdf.columns:
+                rides_per_hex_gdf = rides_per_hex_gdf.drop(columns=['geometry'])
+
             # Convert H3 hexagons to GeoDataFrame for visualization
-            rides_per_hex_gdf = gpd.GeoDataFrame(rides_per_hex, geometry=gpd.points_from_xy(
-                rides_per_hex.h3.apply(lambda h: h3.h3_to_geo(h)[1]), 
-                rides_per_hex.h3.apply(lambda h: h3.h3_to_geo(h)[0])), crs="EPSG:4326")
+            rides_per_hex_gdf = gpd.GeoDataFrame(
+            rides_per_hex,
+            geometry=rides_per_hex['h3'].apply(lambda x: Polygon(h3.h3_to_geo_boundary(x, geo_json=True))),
+            crs="EPSG:4326"
+)
 
             # Calculate the center of the data for the map
             if boundary_gdf is not None:
@@ -159,33 +221,25 @@ def rides_h3():
             else:
                 center_lat, center_lon = calculate_center(rides_per_hex_gdf, lost_rides_gdf, dpzs)
 
-            # Initialize Kepler.gl map with a larger height and centered on the data
-            kepler_map = KeplerGl(height=1000, config=polygon_cluster_h3_config, dataToLayer=False)  # Adjusted height for a larger map
+               # Update the mapState in the configuration
+            polygon_cluster_h3_config['config']['mapState']['latitude'] = center_lat
+            polygon_cluster_h3_config['config']['mapState']['longitude'] = center_lon
 
-            # Add the hexagon data (rides) to Kepler.gl
+            # Initialize Kepler.gl map without configuration
+            kepler_map = KeplerGl(height=1000, data_to_layer=False)
+
+            # Add the data to Kepler.gl
             kepler_map.add_data(rides_per_hex_gdf, "Rides hex bin")
-
-            # Add the searches data as points to Kepler.gl
             kepler_map.add_data(lost_rides_gdf, "Lost Rides Data")
-
-            # Add the deployment polygons (dpzs) to Kepler.gl
             kepler_map.add_data(dpzs, "Deployment Zones")
 
-            # Set initial map view based on the calculated center
-            kepler_map.config = {
-                "version": "v1",
-                "config": {
-                    "mapState": {
-                        "latitude": center_lat,
-                        "longitude": center_lon,
-                        "zoom": 11  # Adjust the zoom level as needed
-                    }
-                }
-            }
+            # Set the configuration after adding data
+            kepler_map.config = polygon_cluster_h3_config
 
             # Render the Kepler.gl map in Streamlit
             kepler_map_html = kepler_map._repr_html_()
             st.components.v1.html(kepler_map_html, height=800)  # Larger map view
+
 
     elif page == "CSV to GeoJSON Conversion":
         st.title("CSV to GeoJSON Conversion")
