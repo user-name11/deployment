@@ -21,7 +21,7 @@ polygon_cluster_h3_config = {
             "visConfig": {
               "opacity": 0.5,
               "strokeOpacity": 1,
-              "thickness": 0.5
+              "thickness": 1
             }
           }
         },
@@ -34,7 +34,13 @@ polygon_cluster_h3_config = {
             "isVisible": True,
             "visConfig": {
               "radius": 30,
-              "opacity": 0.8
+              "opacity": 0.8,
+              "fixedRadius": False,        # Enable dynamic radius
+              "cluster": True,             # Enable clustering
+              "clusterRadius": 50,         # Radius of clustering in pixels
+              "colorRange": {
+                "colors": ["#E1F5FE", "#039BE5", "#0277BD"]
+              }
             }
           }
         },
@@ -154,7 +160,7 @@ def rides_h3():
                 center_lat, center_lon = calculate_center(rides_per_hex_gdf, lost_rides_gdf, dpzs)
 
             # Initialize Kepler.gl map with a larger height and centered on the data
-            kepler_map = KeplerGl(height=1000)  # Adjusted height for a larger map
+            kepler_map = KeplerGl(height=1000, config=polygon_cluster_h3_config)  # Adjusted height for a larger map
 
             # Add the hexagon data (rides) to Kepler.gl
             kepler_map.add_data(rides_per_hex_gdf, "Rides hex bin")
