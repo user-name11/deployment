@@ -54,6 +54,7 @@ def rides_h3():
             lost_rides = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
             lost_rides = lost_rides.iloc[:-1]
             lost_rides['Rides lost '] = lost_rides['Rides lost '].str.replace(',', '').astype(int)
+            lost_rides = lost_rides[lost_rides['Rides lost '] !=0]
  
             # Split 'Location' column into separate latitude and longitude columns
             lost_rides[['latitude', 'longitude']] = lost_rides['Search Location 3 Digits'].str.split(',', expand=True)
