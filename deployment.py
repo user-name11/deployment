@@ -53,14 +53,15 @@ def rides_h3():
             # Read the uploaded searches CSV file
             lost_rides = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
             lost_rides = lost_rides.iloc[:-1]
-            
-
+            lost_rides['Rides lost '] = lost_rides['Rides lost '].str.replace(',', '').astype(int)
+ 
             # Split 'Location' column into separate latitude and longitude columns
             lost_rides[['latitude', 'longitude']] = lost_rides['Search Location 3 Digits'].str.split(',', expand=True)
             
             # Convert latitude and longitude columns to numeric
             lost_rides['latitude'] = pd.to_numeric(lost_rides['latitude'])
             lost_rides['longitude'] = pd.to_numeric(lost_rides['longitude'])
+
 
             # Read the uploaded deployment spots GeoJSON file
             dpzs = gpd.read_file(deployment_spots_file)
