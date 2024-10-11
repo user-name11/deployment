@@ -39,26 +39,28 @@ def rides_h3():
         # Upload necessary files for analysis
         st.sidebar.title("Upload Files")
         rides_file = st.sidebar.file_uploader("Upload the Rides CSV file:", type="csv")
-        searches_file = st.sidebar.file_uploader("Upload the Searches CSV file:", type="csv")
+        lost_rides = st.sidebar.file_uploader("Upload the Lost rides CSV file:", type="csv")
         deployment_spots_file = st.sidebar.file_uploader("Upload the deployment spots downloaded from Admin", type="geojson")
         boundary_file = st.sidebar.file_uploader("Upload the Boundary GeoJSON file (Optional)", type="geojson")
 
         # Add a resolution selector for H3 hexagons
         resolution = st.sidebar.slider("Select H3 Resolution", min_value=5, max_value=10, value=8)
 
-        if rides_file and searches_file and deployment_spots_file:
+        if rides_file and lost_rides and deployment_spots_file:
             # Read the uploaded rides CSV file
             rides_df = pd.read_csv(rides_file)
 
             # Read the uploaded searches CSV file
-            searches_df = pd.read_csv(searches_file)
+            lost_rides = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
+            lost_rides = lost_rides.iloc[:-1]
+            
 
             # Split 'Location' column into separate latitude and longitude columns
-            searches_df[['latitude', 'longitude']] = searches_df['Location'].str.split(',', expand=True)
+            lost_rides[['latitude', 'longitude']] = lost_rides['Search Location 3 Digits'].str.split(',', expand=True)
             
             # Convert latitude and longitude columns to numeric
-            searches_df['latitude'] = pd.to_numeric(searches_df['latitude'])
-            searches_df['longitude'] = pd.to_numeric(searches_df['longitude'])
+            lost_rides['latitude'] = pd.to_numeric(lost_rides['latitude'])
+            lost_rides['longitude'] = pd.to_numeric(lost_rides['longitude'])
 
             # Read the uploaded deployment spots GeoJSON file
             dpzs = gpd.read_file(deployment_spots_file)
@@ -78,8 +80,8 @@ def rides_h3():
             )
 
             # Create searches GeoDataFrame (no H3 hex conversion, just points)
-            searches_gdf = gpd.GeoDataFrame(
-                searches_df, geometry=gpd.points_from_xy(searches_df.longitude, searches_df.latitude), crs="EPSG:4326"
+            lost_rides_gdf = gpd.GeoDataFrame(
+                lost_rides, geometry=gpd.points_from_xy(lost_rides.longitude, lost_rides.latitude), crs="EPSG:4326"
             )
 
             # Hexagonal binning for rides data using H3
@@ -97,7 +99,7 @@ def rides_h3():
             if boundary_gdf is not None:
                 center_lat, center_lon = calculate_center(boundary_gdf)
             else:
-                center_lat, center_lon = calculate_center(rides_per_hex_gdf, searches_gdf, dpzs)
+                center_lat, center_lon = calculate_center(rides_per_hex_gdf, lost_rides_gdf, dpzs)
 
             # Initialize Kepler.gl map with a larger height and centered on the data
             kepler_map = KeplerGl(height=1000)  # Adjusted height for a larger map
@@ -106,7 +108,7 @@ def rides_h3():
             kepler_map.add_data(rides_per_hex_gdf, "Hexagon Data (Rides)")
 
             # Add the searches data as points to Kepler.gl
-            kepler_map.add_data(searches_gdf, "Searches Data")
+            kepler_map.add_data(lost_rides_gdf, "Searches Data")
 
             # Add the deployment polygons (dpzs) to Kepler.gl
             kepler_map.add_data(dpzs, "Deployment Zones")
