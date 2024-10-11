@@ -107,17 +107,17 @@ def rides_h3():
             rides_df = pd.read_csv(rides_file)
 
             # Read the uploaded searches CSV file
-            lost_rides = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
-            lost_rides = lost_rides.iloc[:-1]
-            lost_rides['Rides lost '] = lost_rides['Rides lost '].str.replace(',', '').astype(int)
-            lost_rides = lost_rides[lost_rides['Rides lost '] !=0]
+            lost_rides_df = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
+            lost_rides_df = lost_rides_df.iloc[:-1]
+            lost_rides_df['Rides lost '] = lost_rides_df['Rides lost '].str.replace(',', '').astype(int)
+            lost_rides_df= lost_rides_df[lost_rides_df['Rides lost '] !=0]
  
             # Split 'Location' column into separate latitude and longitude columns
-            lost_rides[['latitude', 'longitude']] = lost_rides['Search Location 3 Digits'].str.split(',', expand=True)
+            lost_rides_df[['latitude', 'longitude']] = lost_rides_df['Search Location 3 Digits'].str.split(',', expand=True)
             
             # Convert latitude and longitude columns to numeric
-            lost_rides['latitude'] = pd.to_numeric(lost_rides['latitude'])
-            lost_rides['longitude'] = pd.to_numeric(lost_rides['longitude'])
+            lost_rides_df['latitude'] = pd.to_numeric(lost_rides_df['latitude'])
+            lost_rides_df['longitude'] = pd.to_numeric(lost_rides_df['longitude'])
 
 
             # Read the uploaded deployment spots GeoJSON file
@@ -139,7 +139,7 @@ def rides_h3():
 
             # Create searches GeoDataFrame (no H3 hex conversion, just points)
             lost_rides_gdf = gpd.GeoDataFrame(
-                lost_rides, geometry=gpd.points_from_xy(lost_rides.longitude, lost_rides.latitude), crs="EPSG:4326"
+                lost_rides_df, geometry=gpd.points_from_xy(lost_rides_df.longitude, lost_rides_df.latitude), crs="EPSG:4326"
             )
 
             # Hexagonal binning for rides data using H3
@@ -160,7 +160,7 @@ def rides_h3():
                 center_lat, center_lon = calculate_center(rides_per_hex_gdf, lost_rides_gdf, dpzs)
 
             # Initialize Kepler.gl map with a larger height and centered on the data
-            kepler_map = KeplerGl(height=1000, config=polygon_cluster_h3_config)  # Adjusted height for a larger map
+            kepler_map = KeplerGl(height=1000, config=polygon_cluster_h3_config, dataToLayer=False)  # Adjusted height for a larger map
 
             # Add the hexagon data (rides) to Kepler.gl
             kepler_map.add_data(rides_per_hex_gdf, "Rides hex bin")
