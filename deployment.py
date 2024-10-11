@@ -110,7 +110,7 @@ def rides_h3():
             kepler_map.add_data(rides_per_hex_gdf, "Hexagon Data (Rides)")
 
             # Add the searches data as points to Kepler.gl
-            kepler_map.add_data(lost_rides_gdf, "Searches Data")
+            kepler_map.add_data(lost_rides_gdf, "Lost rides Data")
 
             # Add the deployment polygons (dpzs) to Kepler.gl
             kepler_map.add_data(dpzs, "Deployment Zones")
