@@ -7,7 +7,7 @@ print(h3.__version__)
 import json
 from shapely import wkt
 from shapely import Polygon
-
+from h3 import h3
 
 polygon_cluster_h3_config = {
     "version": "v1",
