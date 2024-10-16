@@ -258,4 +258,3 @@ def rides_h3():
 
 # Run the Streamlit app
 rides_h3()
-
