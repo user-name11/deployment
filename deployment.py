@@ -6,34 +6,13 @@ import h3
 import json
 from shapely import wkt
 from shapely import Polygon
+import json
+
 
 polygon_cluster_h3_config = {
     "version": "v1",
     "config": {
         "visState": {
-            "datasets": [
-                {
-                    "id": "Deployment Zones",
-                    "label": "Deployment Zones",
-                    "color": [255, 153, 31],
-                    "allData": [],
-                    "fields": []
-                },
-                {
-                    "id": "Lost Rides Data",
-                    "label": "Lost Rides Data",
-                    "color": [0, 0, 255],
-                    "allData": [],
-                    "fields": []
-                },
-                {
-                    "id": "Rides hex bin",
-                    "label": "Rides hex bin",
-                    "color": [0, 255, 0],
-                    "allData": [],
-                    "fields": []
-                }
-            ],
             "layers": [
                 {
                     "id": "polygon-layer-id",
@@ -59,9 +38,9 @@ polygon_cluster_h3_config = {
                         "visConfig": {
                             "radius": 30,
                             "opacity": 0.8,
-                            "fixedRadius": False,        # Enable dynamic radius
-                            "cluster": True,             # Enable clustering
-                            "clusterRadius": 50,         # Radius of clustering in pixels
+                            "fixedRadius": False,
+                            "cluster": True,
+                            "clusterRadius": 50,
                             "colorRange": {
                                 "colors": ["#E1F5FE", "#039BE5", "#0277BD"]
                             }
@@ -76,7 +55,8 @@ polygon_cluster_h3_config = {
                         "label": "H3 Hexagons",
                         "isVisible": True,
                         "columns": {
-                            "hex_id": "hex_id"},
+                            "hex_id": "hex_id"
+                        },
                         "visConfig": {
                             "opacity": 0.7
                         }
@@ -87,8 +67,8 @@ polygon_cluster_h3_config = {
         "mapState": {
             "bearing": 0,
             "dragRotate": True,
-            "latitude": 0,  # Placeholder, will be updated later
-            "longitude": 0,  # Placeholder, will be updated later
+            "latitude": 52.38989885855858,
+            "longitude": 10.283403028497844,
             "pitch": 0,
             "zoom": 11,
             "isSplit": False
@@ -109,7 +89,6 @@ polygon_cluster_h3_config = {
         }
     }
 }
-
 
 
 # Function to convert CSV with WKT geometry back to GeoDataFrame
@@ -239,6 +218,8 @@ def rides_h3():
             # Render the Kepler.gl map in Streamlit
             kepler_map_html = kepler_map._repr_html_()
             st.components.v1.html(kepler_map_html, height=800)  # Larger map view
+            print(json.dumps(kepler_map.config, indent=2))
+            print(rides_per_hex_gdf)
 
 
     elif page == "CSV to GeoJSON Conversion":
@@ -278,3 +259,4 @@ def rides_h3():
 
 # Run the Streamlit app
 rides_h3()
+
