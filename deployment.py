@@ -6,7 +6,6 @@ import h3
 import json
 from shapely import wkt
 from shapely import Polygon
-import json
 
 
 polygon_cluster_h3_config = {
