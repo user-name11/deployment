@@ -1,5 +1,5 @@
 streamlit
 geopandas
-h3
+h3==3.7.7
 keplergl
 shapely

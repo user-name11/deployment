@@ -3,7 +3,7 @@ import pandas as pd
 import geopandas as gpd
 from keplergl import KeplerGl
 import h3
-print(h3.__version__)
+print(h3.__version__) 
 import json
 from shapely import wkt
 from shapely import Polygon
