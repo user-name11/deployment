@@ -191,8 +191,7 @@ def rides_h3():
             rides_per_hex_gdf = gpd.GeoDataFrame(
             rides_per_hex,
             geometry=rides_per_hex['h3'].apply(lambda x: Polygon(h3.h3_to_geo_boundary(x, geo_json=True))),
-            crs="EPSG:4326"
-)
+            crs="EPSG:4326")
 
             # Calculate the center of the data for the map
             if boundary_gdf is not None:
