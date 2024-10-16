@@ -172,7 +172,7 @@ def rides_h3():
             )
 
             # Hexagonal binning for rides data using H3
-            rides_gdf['h3'] = rides_gdf.apply(lambda row: h3.geo_to_h3(row.geometry.y, row.geometry.x, resolution=resolution), axis=1)
+            rides_gdf['h3'] = rides_gdf.apply(lambda row: h3.h3_to_geo(row.geometry.y, row.geometry.x, resolution=resolution), axis=1)
 
             # Group rides by hexagon and count rides per hexagon
             rides_per_hex = rides_gdf.groupby('h3').size().reset_index(name='ride_count')
