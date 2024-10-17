@@ -238,6 +238,11 @@ def rides_h3():
             # Set the configuration after adding data
             kepler_map.config = polygon_cluster_h3_config
 
+
+            # Extract the Kepler.gl map configuration
+            current_config = kepler_map.config
+
+
             # Provide a download button for the map configuration
             config_json = json.dumps(current_config, indent=2)
             st.download_button(
