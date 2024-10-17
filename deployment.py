@@ -197,6 +197,7 @@ def rides_h3():
             rides_per_hex,
             geometry=rides_per_hex['h3'].apply(lambda x: Polygon(h3.h3_to_geo_boundary(x, geo_json=True))),
             crs="EPSG:4326")
+            rides_per_hex_gdf.drop(column=['h3'], inplace=True)
 
             # Calculate the center of the data for the map
             if boundary_gdf is not None:
@@ -212,8 +213,8 @@ def rides_h3():
             kepler_map = KeplerGl(height=1000, data_to_layer=False)
 
             # Add the data to Kepler.gl
-            kepler_map.add_data(rides_per_hex_gdf, "Rides hex bin")
-            kepler_map.add_data(lost_rides_gdf, "Lost Rides Data")
+            kepler_map.add_data(rides_per_hex_gdf, "Rides binned")
+            kepler_map.add_data(lost_rides_gdf, "Lost Rides")
             kepler_map.add_data(dpzs, "Deployment Zones")
 
             # Set the configuration after adding data
