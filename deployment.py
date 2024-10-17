@@ -147,7 +147,7 @@ def rides_h3():
             # Convert latitude and longitude columns to numeric
             lost_rides_df['latitude'] = pd.to_numeric(lost_rides_df['latitude'])
             lost_rides_df['longitude'] = pd.to_numeric(lost_rides_df['longitude'])
-            lost_rides_df.drop(columns=['Search Location 3 Digits'])
+            
             
 
 
@@ -204,6 +204,9 @@ def rides_h3():
                # Update the mapState in the configuration
             polygon_cluster_h3_config['config']['mapState']['latitude'] = center_lat
             polygon_cluster_h3_config['config']['mapState']['longitude'] = center_lon
+            
+            #flow control
+            lost_rides_df.drop(columns=['Search Location 3 Digits'])
 
             # Initialize Kepler.gl map without configuration
             kepler_map = KeplerGl(height=1000, data_to_layer=False)
