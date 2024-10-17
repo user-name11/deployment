@@ -177,7 +177,7 @@ def rides_h3():
             rides_gdf['h3'] = rides_gdf.apply(lambda row: h3.geo_to_h3(row.geometry.y, row.geometry.x, resolution=resolution), axis=1)
 
             #remove cols from rides_gdf to prevent extra layer creation
-            rides_gdf.drop(columns=['Pickup Lng': 'Pickup_Lng','geometry'])
+            rides_gdf.drop(columns=['Pickup_Lat','Pickup_Lng','geometry'])
 
             # Group rides by hexagon and count rides per hexagon
             rides_per_hex = rides_gdf.groupby('h3').size().reset_index(name='ride_count')
