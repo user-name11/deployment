@@ -197,7 +197,7 @@ def rides_h3():
             rides_per_hex,
             geometry=rides_per_hex['h3'].apply(lambda x: Polygon(h3.h3_to_geo_boundary(x, geo_json=True))),
             crs="EPSG:4326")
-            rides_per_hex_gdf.drop(column=['h3'], inplace=True)
+            rides_per_hex_gdf.drop(column='h3', inplace=True)
 
             # Calculate the center of the data for the map
             if boundary_gdf is not None:
