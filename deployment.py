@@ -147,6 +147,7 @@ def rides_h3():
             # Convert latitude and longitude columns to numeric
             lost_rides_df['latitude'] = pd.to_numeric(lost_rides_df['latitude'])
             lost_rides_df['longitude'] = pd.to_numeric(lost_rides_df['longitude'])
+            lost_rides_df.drop(columns=['Search Location 3 Digits'])
             
 
 
