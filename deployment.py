@@ -167,12 +167,6 @@ def rides_h3():
                 rides_df, geometry=gpd.points_from_xy(rides_df.Pickup_Lng, rides_df.Pickup_Lat), crs="EPSG:4326"
             )
 
-            # Create searches GeoDataFrame (no H3 hex conversion, just points)
-            lost_rides_gdf = gpd.GeoDataFrame(
-                lost_rides_df, geometry=gpd.points_from_xy(lost_rides_df.longitude, lost_rides_df.latitude), crs="EPSG:4326"
-            )
-            lost_rides_gdf.drop(columns=['Search Location 3 Digits', 'latitude', 'longitude'], inplace=True)
-
             # Hexagonal binning for rides data using H3
             rides_gdf['h3'] = rides_gdf.apply(lambda row: h3.geo_to_h3(row.geometry.y, row.geometry.x, resolution=resolution), axis=1)
 
@@ -215,7 +209,7 @@ def rides_h3():
 
             # Add the data to Kepler.gl
             kepler_map.add_data(rides_hex, "Rides binned")
-            kepler_map.add_data(lost_rides_gdf, "Lost Rides")
+            kepler_map.add_data(lost_rides_df, "Lost Rides")
             kepler_map.add_data(dpzs, "Deployment Zones")
 
             # Set the configuration after adding data
