@@ -24,8 +24,8 @@ polygon_cluster_h3_config = {
                         "visConfig": {
                             "opacity": 0.5,
                             "strokeOpacity": 1,
-                            "thickness": 4,
-                            "strokeColor": [128, 0, 128]
+                            "thickness": 4,  # Stroke width set to 4
+                            "strokeColor": [128, 0, 128]  # Purple stroke color in RGB format
                         }
                     }
                 },
@@ -37,10 +37,10 @@ polygon_cluster_h3_config = {
                         "label": "Clusters",
                         "isVisible": True,
                         "columns": {
-                            "radius": "Rides lost"
+                            "radius": "Rides lost"  # Dynamic radius based on 'Rides lost' column
                         },
                         "visConfig": {
-                            "radius": "30",
+                            "radius": 30,  # Default radius
                             "opacity": 0.8,
                             "fixedRadius": False,
                             "cluster": True,
@@ -63,8 +63,8 @@ polygon_cluster_h3_config = {
                         },
                         "visConfig": {
                             "opacity": 0.7,
-                            "colorRange" = {
-                                "colors"= [
+                            "colorRange": {
+                                "colors": [
                                     "#0000FF",  # Blue
                                     "#0033FF",
                                     "#0066FF",
@@ -75,8 +75,8 @@ polygon_cluster_h3_config = {
                                     "#FF9999",
                                     "#FF6666",
                                     "#FF3333",
-                                    "#FF0000"
-                                ]}
+                                    "#FF0000"   # Dark Red
+                                ]
                             }
                         }
                     }
