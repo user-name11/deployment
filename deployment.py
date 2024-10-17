@@ -24,7 +24,8 @@ polygon_cluster_h3_config = {
                         "visConfig": {
                             "opacity": 0.5,
                             "strokeOpacity": 1,
-                            "thickness": 1
+                            "thickness": 4,
+                            "strokeColor": [128, 0, 128]
                         }
                     }
                 },
@@ -35,8 +36,11 @@ polygon_cluster_h3_config = {
                         "dataId": "Lost Rides Data",
                         "label": "Clusters",
                         "isVisible": True,
+                        "columns": {
+                            "radius": "Rides lost"
+                        },
                         "visConfig": {
-                            "radius": 30,
+                            "radius": "30",
                             "opacity": 0.8,
                             "fixedRadius": False,
                             "cluster": True,
@@ -58,7 +62,22 @@ polygon_cluster_h3_config = {
                             "hex_id": "hex_id"
                         },
                         "visConfig": {
-                            "opacity": 0.7
+                            "opacity": 0.7,
+                            "colorRange" = {
+                                "colors"= [
+                                    "#0000FF",  # Blue
+                                    "#0033FF",
+                                    "#0066FF",
+                                    "#0099FF",
+                                    "#00CCFF",
+                                    "#00FFFF",
+                                    "#FFCCCC",
+                                    "#FF9999",
+                                    "#FF6666",
+                                    "#FF3333",
+                                    "#FF0000"
+                                ]}
+                            }
                         }
                     }
                 }
