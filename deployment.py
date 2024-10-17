@@ -206,7 +206,7 @@ def rides_h3():
             polygon_cluster_h3_config['config']['mapState']['longitude'] = center_lon
             
             #flow control
-            lost_rides_df.drop(columns=['Search Location 3 Digits'])
+            lost_rides_df.drop(columns=['Search Location 3 Digits'], inplace=True)
 
             # Initialize Kepler.gl map without configuration
             kepler_map = KeplerGl(height=1000, data_to_layer=False)
