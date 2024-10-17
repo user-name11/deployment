@@ -241,21 +241,6 @@ def rides_h3():
             kepler_map.config = polygon_cluster_h3_config
 
 
-            # Extract the Kepler.gl map configuration
-            current_config = kepler_map.config
-
-
-            # Provide a download button for the map configuration
-            config_json = json.dumps(current_config, indent=2)
-            st.download_button(
-                label="Download Kepler.gl Config as JSON",
-                data=config_json,
-                file_name="kepler_config.json",
-                mime="application/json"
-            )
-            
-
-
             # Render the Kepler.gl map in Streamlit
             kepler_map_html = kepler_map._repr_html_()
             st.components.v1.html(kepler_map_html, height=800)  # Larger map view
