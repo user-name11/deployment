@@ -198,7 +198,7 @@ def rides_h3():
             if boundary_gdf is not None:
                 center_lat, center_lon = calculate_center(boundary_gdf)
             else:
-                center_lat, center_lon = calculate_center(rides_per_hex_gdf, lost_rides_gdf, dpzs)
+                center_lat, center_lon = calculate_center(rides_per_hex_gdf, dpzs)
 
                # Update the mapState in the configuration
             polygon_cluster_h3_config['config']['mapState']['latitude'] = center_lat
