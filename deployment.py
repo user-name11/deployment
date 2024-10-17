@@ -13,136 +13,98 @@ polygon_cluster_h3_config = {
     "version": "v1",
     "config": {
         "visState": {
-            "filters": [],
             "layers": [
                 {
-                    "id": "lqrcktx",
+                    "id": "polygon-layer-id",
                     "type": "geojson",
                     "config": {
-                        "dataId": "9xmzs6",
-                        "columnMode": "geojson",
-                        "label": "WOB DPZs",
-                        "color": [254, 242, 26],
-                        "highlightColor": [252, 242, 26, 255],
-                        "columns": {"geojson": "_geojson"},
+                        "dataId": "Deployment Zones",  # The dataId should match the actual dataset ID
+                        "label": "Polygons",
                         "isVisible": True,
                         "visConfig": {
-                            "opacity": 0.8,
-                            "strokeOpacity": 0.8,
-                            "thickness": 3.5,
-                            "strokeColor": [254, 242, 26],
-                            "colorRange": {
-                                "name": "Global Warming",
-                                "type": "sequential",
-                                "category": "Uber",
-                                "colors": ["#5A1846", "#900C3F", "#C70039", "#E3611C", "#F1920E", "#FFC300"]
-                            },
-                            "radius": 10,
-                            "sizeRange": [0, 10],
-                            "radiusRange": [0, 50],
-                            "heightRange": [0, 500],
-                            "elevationScale": 5,
-                            "stroked": True,
-                            "filled": True,
-                            "enable3d": False,
-                            "wireframe": False
-                        },
-                        "hidden": False,
-                        "textLabel": []
-                    },
-                    "visualChannels": {}
-                },
-                {
-                    "id": "f5ml7pr",
-                    "type": "point",
-                    "config": {
-                        "dataId": "-vrcv5w",
-                        "columnMode": "points",
-                        "label": "point",
-                        "color": [34, 63, 154],
-                        "highlightColor": [252, 242, 26, 255],
-                        "columns": {"lat": "latitude", "lng": "longitude"},
-                        "isVisible": True,
-                        "visConfig": {
-                            "radius": 10,
-                            "fixedRadius": False,
-                            "opacity": 0.8,
-                            "outline": False,
-                            "thickness": 2,
-                            "colorRange": {
-                                "name": "ColorBrewer PRGn-10",
-                                "type": "diverging",
-                                "category": "ColorBrewer",
-                                "colors": ["#40004b", "#762a83", "#9970ab", "#c2a5cf", "#e7d4e8", "#d9f0d3", "#a6dba0", "#5aae61", "#1b7837", "#00441b"]
-                            },
-                            "radiusRange": [15.4, 197.4],
-                            "filled": True,
-                            "billboard": False
-                        },
-                        "hidden": False,
-                        "textLabel": []
-                    },
-                    "visualChannels": {
-                        "colorField": {"name": "0", "type": "integer"},
-                        "colorScale": "quantile",
-                        "sizeField": {"name": "Rides lost ", "type": "integer"},
-                        "sizeScale": "sqrt"
+                            "opacity": 0.5,
+                            "strokeOpacity": 1,
+                            "thickness": 4,  # Stroke width set to 4
+                            "strokeColor": [128, 0, 128]  # Purple stroke color in RGB format
+                        }
                     }
                 },
                 {
-                    "id": "mpw8q",
+                    "id": "cluster-layer-id",
+                    "type": "point",
+                    "config": {
+                        "dataId": "Lost Rides Data",  # Corrected dataId for lost rides
+                        "label": "Clusters",
+                        "isVisible": True,
+                        "columns": {
+                            "radius": "Rides lost"  # Dynamic radius based on 'Rides lost' column
+                        },
+                        "visConfig": {
+                            "radius": 30,  # Default radius
+                            "opacity": 0.8,
+                            "fixedRadius": False,
+                            "cluster": True,
+                            "clusterRadius": 50,
+                            "colorRange": {
+                                "colors": ["#E1F5FE", "#039BE5", "#0277BD"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "h3-layer-id",
                     "type": "hexagonId",
                     "config": {
-                        "dataId": "bdmwjq",
-                        "label": "rides.geojson",
-                        "color": [130, 154, 227],
-                        "highlightColor": [252, 242, 26, 255],
-                        "columns": {"hex_id": "h3"},
+                        "dataId": "Rides hex bin",  # Corrected dataId for hex bin
+                        "label": "H3 Hexagons",
                         "isVisible": True,
-                        "visConfig": {
-                            "colorRange": {
-                                "name": "Uber Viz Diverging 4",
-                                "type": "diverging",
-                                "category": "Uber",
-                                "colors": ["#00939C", "#49A6AE", "#71BABF", "#97CED1", "#BAE1E2", "#FEEEE8", "#F8C0AA", "#F2A587", "#E68059", "#D55A2B", "#C22E00"]
-                            },
-                            "opacity": 0.9,
-                            "outline": False,
-                            "strokeOpacity": 0.8,
-                            "thickness": 2,
-                            "coverage": 0.95,
-                            "sizeRange": [0, 500],
-                            "coverageRange": [0, 1],
-                            "elevationScale": 5
+                        "columns": {
+                            "hex_id": "hex_id"  # Corrected column for H3 hexagons
                         },
-                        "hidden": False,
-                        "textLabel": []
-                    },
-                    "visualChannels": {
-                        "colorField": {"name": "ride_count", "type": "integer"},
-                        "colorScale": "quantile"
+                        "visConfig": {
+                            "opacity": 0.7,
+                            "colorRange": {
+                                "colors": [
+                                    "#0000FF",  # Blue
+                                    "#0033FF",
+                                    "#0066FF",
+                                    "#0099FF",
+                                    "#00CCFF",
+                                    "#00FFFF",
+                                    "#FFCCCC",
+                                    "#FF9999",
+                                    "#FF6666",
+                                    "#FF3333",
+                                    "#FF0000"   # Dark Red
+                                ]
+                            }
+                        }
                     }
                 }
             ]
         },
         "mapState": {
             "bearing": 0,
-            "dragRotate": False,
-            "latitude": 52.422224033413926,
-            "longitude": 10.730524803241252,
+            "dragRotate": True,
+            "latitude": 52.38989885855858,
+            "longitude": 10.283403028497844,
             "pitch": 0,
-            "zoom": 12.519725885567409
+            "zoom": 11,
+            "isSplit": False
         },
         "mapStyle": {
-            "styleType": "dark-matter",
+            "styleType": "dark",
+            "topLayerGroups": {},
             "visibleLayerGroups": {
                 "label": True,
                 "road": True,
                 "border": False,
                 "building": True,
                 "water": True,
-                "land": True
-            }
+                "land": True,
+                "3d building": False
+            },
+            "mapStyles": {}
         }
     }
 }
