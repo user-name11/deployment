@@ -226,6 +226,8 @@ def rides_h3():
             
             #flow control
             lost_rides_df.drop(columns=['Search Location 3 Digits'], inplace=True)
+            lost_rides_df.to_csv('lost.csv')
+            rides_hex.to_file('rides.geojson', driver="GeoJSON")
 
             # Initialize Kepler.gl map without configuration
             kepler_map = KeplerGl(height=1000, data_to_layer=False)
