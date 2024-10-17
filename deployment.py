@@ -147,6 +147,7 @@ def rides_h3():
             # Convert latitude and longitude columns to numeric
             lost_rides_df['latitude'] = pd.to_numeric(lost_rides_df['latitude'])
             lost_rides_df['longitude'] = pd.to_numeric(lost_rides_df['longitude'])
+            
 
 
             # Read the uploaded deployment spots GeoJSON file
@@ -170,6 +171,7 @@ def rides_h3():
             lost_rides_gdf = gpd.GeoDataFrame(
                 lost_rides_df, geometry=gpd.points_from_xy(lost_rides_df.longitude, lost_rides_df.latitude), crs="EPSG:4326"
             )
+            lost_rides_gdf.drop(columns=['Search Location 3 Digits', 'latitude', 'longitude'], inplace=True)
 
             # Hexagonal binning for rides data using H3
             rides_gdf['h3'] = rides_gdf.apply(lambda row: h3.geo_to_h3(row.geometry.y, row.geometry.x, resolution=resolution), axis=1)
