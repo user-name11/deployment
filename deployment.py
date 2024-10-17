@@ -237,7 +237,7 @@ def rides_h3():
 
             # Set the configuration after adding data
             kepler_map.config = polygon_cluster_h3_config
-            st.write(kepler_map.config)  # This will show the map's current config in the Streamlit app
+            
 
 
             # Render the Kepler.gl map in Streamlit
