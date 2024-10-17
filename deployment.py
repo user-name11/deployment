@@ -33,7 +33,7 @@ polygon_cluster_h3_config = {
                     "id": "cluster-layer-id",
                     "type": "point",
                     "config": {
-                        "dataId": "Lost Rides Data",
+                        "dataId": "Lost Rides",
                         "label": "Clusters",
                         "isVisible": True,
                         "columns": {
@@ -55,7 +55,7 @@ polygon_cluster_h3_config = {
                     "id": "h3-layer-id",
                     "type": "hexagonId",
                     "config": {
-                        "dataId": "Rides hex bin",
+                        "dataId":  "Rides binned",
                         "label": "H3 Hexagons",
                         "isVisible": True,
                         "columns": {
