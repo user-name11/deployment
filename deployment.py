@@ -172,6 +172,10 @@ def rides_h3():
 
             # Read the uploaded deployment spots GeoJSON file
             dpzs = gpd.read_file(deployment_spots_file)
+            dpz_hi = dpzs[dpzs['deployment_priority'] == 'high']
+            dpz_mid = dpzs[dpzs['deployment_priority'] == 'medium']
+            dpz_low = dpzs[dpzs['deployment_priority'] == 'low']
+            
 
             # If boundary file is uploaded, read it
             if boundary_file:
@@ -235,7 +239,9 @@ def rides_h3():
             # Add the data to Kepler.gl
             kepler_map.add_data(rides_hex, "Rides binned")
             kepler_map.add_data(lost_rides_df, "Lost Rides")
-            kepler_map.add_data(dpzs, "Deployment Zones")
+            kepler_map.add_data(dpz_hi, "High Prio Deployment Zones")
+            kepler_map.add_data(dpz_mid, "Mid Prio Deployment Zones")
+            kepler_map.add_data(dpz_low, "Low Prio Deployment Zones")
 
             # Set the configuration after adding data
             kepler_map.config = polygon_cluster_h3_config
