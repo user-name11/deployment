@@ -142,8 +142,8 @@ def rides_h3():
 
         # Upload necessary files for analysis
         st.sidebar.title("Upload Files")
-        rides_file = st.sidebar.file_uploader("Upload the Rides CSV file:", type="csv")
-        lost_rides = st.sidebar.file_uploader("Upload the Lost rides CSV file:", type="csv")
+        rides_file = st.sidebar.file_uploader("Upload the Rides CSV file from looker https://bolt.cloud.looker.com/looks/3523:", type="csv")
+        lost_rides = st.sidebar.file_uploader("Upload the Rides lost CSV file from looker https://bolt.cloud.looker.com/dashboards/163:", type="csv")
         deployment_spots_file = st.sidebar.file_uploader("Upload the deployment spots downloaded from Admin", type="geojson")
         boundary_file = st.sidebar.file_uploader("Upload the Boundary GeoJSON file (Optional)", type="geojson")
 
