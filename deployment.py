@@ -157,7 +157,7 @@ def rides_h3():
             # Read the uploaded searches CSV file
             lost_rides_df = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
             lost_rides_df = lost_rides_df.iloc[:-1]
-            lost_rides_df['Rides lost '] = lost_rides_df['Rides lost '].str.replace(',', '').astype(int)
+            #lost_rides_df['Rides lost '] = lost_rides_df['Rides lost '].str.replace(',', '').astype(int)
             lost_rides_df= lost_rides_df[lost_rides_df['Rides lost '] !=0]
  
             # Split 'Location' column into separate latitude and longitude columns
