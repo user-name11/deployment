@@ -37,7 +37,7 @@ polygon_cluster_h3_config = {
                         "label": "Clusters",
                         "isVisible": True,
                         "columns": {
-                            "radius": "Rides lost"  # Dynamic radius based on 'Rides lost' column
+                            "radius": "Rides lost "  # Dynamic radius based on 'Rides lost' column
                         },
                         "visConfig": {
                             "radius": 30,  # Default radius
@@ -158,7 +158,7 @@ def rides_h3():
             lost_rides_df = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
             lost_rides_df = lost_rides_df.iloc[:-1]
             lost_rides_df['Rides lost '] = lost_rides_df['Rides lost '].str.replace(',', '').astype(int)
-            #lost_rides_df= lost_rides_df[lost_rides_df['Rides lost '] !=0]
+            lost_rides_df= lost_rides_df[lost_rides_df['Rides lost '] !=0]
  
             # Split 'Location' column into separate latitude and longitude columns
             lost_rides_df[['latitude', 'longitude']] = lost_rides_df['Search Location 3 Digits'].str.split(',', expand=True)
