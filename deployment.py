@@ -150,9 +150,16 @@ def rides_h3():
         # Add a resolution selector for H3 hexagons
         resolution = st.sidebar.slider("Select H3 Resolution", min_value=5, max_value=10, value=8)
 
+        # Add a filter button for vehicle type
+        vehicle_filter = st.sidebar.radio("Filter by Vehicle Type", ["All", "scooters", "E-bikes"])
+
         if rides_file and lost_rides and deployment_spots_file:
             # Read the uploaded rides CSV file
             rides_df = pd.read_csv(rides_file)
+
+            # Apply vehicle filter if not "All"
+            if vehicle_filter != "All":
+                rides_df = rides_df[rides_df['Vehicle Type Scooter or Bike'] == vehicle_filter]
 
             # Read the uploaded searches CSV file
             lost_rides_df = pd.read_csv(lost_rides, usecols=lambda column: column not in ['Unnamed: 0'])
